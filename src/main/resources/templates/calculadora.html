@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Web</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 50%, #2980b9 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .calculadora-container {
+            background: linear-gradient(145deg, #34495e, #2c3e50);
+            border-radius: 20px;
+            box-shadow: 
+                0 25px 45px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            border: 1px solid rgba(52, 152, 219, 0.3);
+        }
+
+        .titulo {
+            text-align: center;
+            color: #ecf0f1;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .pantalla {
+            background: linear-gradient(145deg, #1a252f, #2c3e50);
+            border: 2px solid #3498db;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .resultado {
+            background: transparent;
+            border: none;
+            color: #3498db;
+            font-size: 32px;
+            font-weight: bold;
+            text-align: right;
+            width: 100%;
+            outline: none;
+            text-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+        }
+
+        .operacion-texto {
+            color: #bdc3c7;
+            font-size: 14px;
+            text-align: right;
+            margin-top: 5px;
+            min-height: 20px;
+        }
+
+        .form-calculadora {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .label {
+            color: #ecf0f1;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .input-numero {
+            background: linear-gradient(145deg, #34495e, #2c3e50);
+            border: 2px solid #3498db;
+            border-radius: 10px;
+            padding: 12px;
+            color: #ecf0f1;
+            font-size: 18px;
+            font-weight: bold;
+            outline: none;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .input-numero:focus {
+            border-color: #5dade2;
+            box-shadow: 
+                inset 0 2px 5px rgba(0, 0, 0, 0.3),
+                0 0 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .input-numero::placeholder {
+            color: #7f8c8d;
+        }
+
+        .operaciones {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .operacion-btn {
+            background: linear-gradient(145deg, #3498db, #2980b9);
+            border: none;
+            border-radius: 10px;
+            padding: 15px;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 4px 8px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .operacion-btn:hover {
+            background: linear-gradient(145deg, #5dade2, #3498db);
+            transform: translateY(-2px);
+            box-shadow: 
+                0 6px 12px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .operacion-btn:active {
+            transform: translateY(0);
+            box-shadow: 
+                0 2px 4px rgba(0, 0, 0, 0.3),
+                inset 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .operacion-btn.selected {
+            background: linear-gradient(145deg, #e74c3c, #c0392b);
+        }
+
+        .btn-calcular {
+            background: linear-gradient(145deg, #27ae60, #2ecc71);
+            border: none;
+            border-radius: 15px;
+            padding: 18px;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 6px 12px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            margin-top: 10px;
+        }
+
+        .btn-calcular:hover {
+            background: linear-gradient(145deg, #2ecc71, #27ae60);
+            transform: translateY(-2px);
+            box-shadow: 
+                0 8px 16px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-limpiar {
+            background: linear-gradient(145deg, #95a5a6, #7f8c8d);
+            border: none;
+            border-radius: 10px;
+            padding: 12px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .btn-limpiar:hover {
+            background: linear-gradient(145deg, #bdc3c7, #95a5a6);
+            transform: translateY(-1px);
+        }
+
+        .error {
+            background: linear-gradient(145deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        @media (max-width: 480px) {
+            .calculadora-container {
+                padding: 25px;
+                margin: 10px;
+            }
+            
+            .titulo {
+                font-size: 24px;
+            }
+            
+            .resultado {
+                font-size: 24px;
+            }
+            
+            .operaciones {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculadora-container">
+        <h1 class="titulo">🧮 Calculadora Web</h1>
+        
+        <div th:if="${error}" class="error" th:text="${error}"></div>
+        
+        <div class="pantalla">
+            <input type="text" class="resultado" th:value="${resultado}" readonly>
+            <div class="operacion-texto" th:text="${operacion ?: ''}"></div>
+        </div>
+        
+        <form method="post" action="/calcular" class="form-calculadora">
+            <div class="input-group">
+                <label class="label">Primer número:</label>
+                <input type="number" 
+                       name="numero1" 
+                       class="input-numero" 
+                       step="any" 
+                       placeholder="Ingrese el primer número" 
+                       th:value="${numero1}"
+                       required>
+            </div>
+            
+            <div class="input-group">
+                <label class="label">Operación:</label>
+                <div class="operaciones">
+                    <button type="submit" 
+                            name="operacion" 
+                            value="suma" 
+                            class="operacion-btn"
+                            th:classappend="${operacionSeleccionada == 'suma'} ? 'selected' : ''">
+                        ➕ Suma
+                    </button>
+                    <button type="submit" 
+                            name="operacion" 
+                            value="resta" 
+                            class="operacion-btn"
+                            th:classappend="${operacionSeleccionada == 'resta'} ? 'selected' : ''">
+                        ➖ Resta
+                    </button>
+                    <button type="submit" 
+                            name="operacion" 
+                            value="multiplicacion" 
+                            class="operacion-btn"
+                            th:classappend="${operacionSeleccionada == 'multiplicacion'} ? 'selected' : ''">
+                        ✖️ Multiplicar
+                    </button>
+                    <button type="submit" 
+                            name="operacion" 
+                            value="division" 
+                            class="operacion-btn"
+                            th:classappend="${operacionSeleccionada == 'division'} ? 'selected' : ''">
+                        ➗ Dividir
+                    </button>
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label class="label">Segundo número:</label>
+                <input type="number" 
+                       name="numero2" 
+                       class="input-numero" 
+                       step="any" 
+                       placeholder="Ingrese el segundo número" 
+                       th:value="${numero2}"
+                       required>
+            </div>
+            
+            <a href="/" class="btn-limpiar" style="text-decoration: none; text-align: center; display: block;">
+                🗑️ Limpiar
+            </a>
+        </form>
+    </div>
+    
+    <script>
+        // Agregar funcionalidad para seleccionar operación sin enviar el formulario inmediatamente
+        document.addEventListener('DOMContentLoaded', function() {
+            const operacionBtns = document.querySelectorAll('.operacion-btn');
+            const form = document.querySelector('.form-calculadora');
+            let operacionSeleccionada = null;
+            
+            operacionBtns.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remover selección previa
+                    operacionBtns.forEach(b => b.classList.remove('selected'));
+                    
+                    // Seleccionar botón actual
+                    this.classList.add('selected');
+                    operacionSeleccionada = this.value;
+                    
+                    // Verificar si ambos números están llenos antes de enviar
+                    const numero1 = document.querySelector('input[name="numero1"]').value;
+                    const numero2 = document.querySelector('input[name="numero2"]').value;
+                    
+                    if (numero1 && numero2) {
+                        // Crear input hidden para la operación
+                        let hiddenInput = document.querySelector('input[name="operacion"]');
+                        if (!hiddenInput) {
+                            hiddenInput = document.createElement('input');
+                            hiddenInput.type = 'hidden';
+                            hiddenInput.name = 'operacion';
+                            form.appendChild(hiddenInput);
+                        }
+                        hiddenInput.value = operacionSeleccionada;
+                        
+                        // Enviar formulario
+                        form.submit();
+                    }
+                });
+            });
+            
+            // Auto-calcular cuando se llenan ambos campos y hay una operación seleccionada
+            const inputs = document.querySelectorAll('input[type="number"]');
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    const numero1 = document.querySelector('input[name="numero1"]').value;
+                    const numero2 = document.querySelector('input[name="numero2"]').value;
+                    
+                    if (numero1 && numero2 && operacionSeleccionada) {
+                        // Crear input hidden para la operación
+                        let hiddenInput = document.querySelector('input[name="operacion"]');
+                        if (!hiddenInput) {
+                            hiddenInput = document.createElement('input');
+                            hiddenInput.type = 'hidden';
+                            hiddenInput.name = 'operacion';
+                            form.appendChild(hiddenInput);
+                        }
+                        hiddenInput.value = operacionSeleccionada;
+                        
+                        // Enviar formulario automáticamente
+                        setTimeout(() => {
+                            form.submit();
+                        }, 500);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
