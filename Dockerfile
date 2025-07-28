@@ -1,20 +1,24 @@
 # Usar una imagen base de OpenJDK 17 con Alpine para menor tamaño
 FROM openjdk:17-jdk-alpine
 
+# Instalar curl para descargar Maven si es necesario
+RUN apk add --no-cache curl
+
 # Establecer el directorio de trabajo
 WORKDIR /app
 
 # Copiar los archivos de Maven wrapper y pom.xml primero para aprovechar el cache de Docker
 COPY mvnw .
 COPY mvnw.cmd .
-COPY .mvn .mvn
+COPY .mvn/ .mvn/
 COPY pom.xml .
 
 # Dar permisos de ejecución al wrapper de Maven
 RUN chmod +x ./mvnw
 
-# Descargar las dependencias (esto se cachea si no cambia el pom.xml)
-RUN ./mvnw dependency:go-offline -B
+# Verificar que el archivo de propiedades existe y descargar las dependencias
+RUN ls -la .mvn/wrapper/ && \
+    ./mvnw dependency:go-offline -B
 
 # Copiar el código fuente
 COPY src src
