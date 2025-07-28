@@ -2,7 +2,7 @@ name: Trigger auto deployment for calculadorahechaenjava
 
 # When this action will be executed
 on:
-  # Automatically trigger it when detected changes in repo
+  # Automatically trigger it when detected changes in repository
   push:
     branches: 
       [ main ]
