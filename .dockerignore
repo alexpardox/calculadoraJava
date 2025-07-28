@@ -1,0 +1,10 @@
+target/
+.git/
+.github/
+.gitignore
+.gitattributes
+.mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.properties
+README.md
+HELP.md
+.vscode/
